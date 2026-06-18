@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Lottery Empire v2</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1300px;
+margin:auto;
+}
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:20px;
+}
+
+.logo{
+font-size:34px;
+font-weight:bold;
+color:gold;
+}
+
+.stats{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.stat{
+background:#1e293b;
+padding:12px;
+border-radius:12px;
+min-width:150px;
+text-align:center;
+}
+
+.stat-value{
+font-size:22px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.layout{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+}
+
+@media(max-width:900px){
+
+.layout{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+.ticket{
+
+background:
+linear-gradient(
+135deg,
+#ff4fc5,
+#ff8de3
+);
+
+padding:25px;
+border-radius:25px;
+
+box-shadow:
+0 0 30px
+rgba(255,0,200,.4);
+
+min-height:720px;
+
+}
+
+.ticket-title{
+
+font-size:60px;
+font-weight:900;
+text-align:center;
+
+text-shadow:
+3px 3px 0 black;
+
+}
+
+.ticket-sub{
+
+text-align:center;
+
+margin:15px 0;
+
+}
+
+.lucky-box{
+
+background:white;
+color:black;
+
+padding:15px;
+
+border-radius:15px;
+
+}
+
+.lucky-number{
+
+height:90px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+font-size:48px;
+font-weight:bold;
+
+border-radius:12px;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.grid-title{
+
+margin-top:20px;
+margin-bottom:10px;
+
+font-weight:bold;
+
+}
+
+.number-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(3,1fr);
+
+gap:12px;
+
+}
+
+.number-cell{
+
+height:130px;
+
+background:white;
+color:black;
+
+border-radius:15px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.cell-content{
+
+text-align:center;
+
+}
+
+.cell-number{
+
+font-size:42px;
+font-weight:bold;
+
+}
+
+.cell-reward{
+
+margin-top:8px;
+
+font-size:14px;
+
+color:green;
+
+font-weight:bold;
+
+}
+
+canvas{
+
+position:absolute;
+
+left:0;
+top:0;
+
+width:100%;
+height:100%;
+
+}
+
+.panel{
+
+background:#1e293b;
+
+padding:20px;
+
+border-radius:20px;
+
+margin-bottom:20px;
+
+}
+
+.panel h2{
+
+margin-bottom:15px;
+
+}
+
+.btn{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:12px;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+margin-bottom:10px;
+
+}
+
+.normal{
+background:#3b82f6;
+color:white;
+}
+
+.premium{
+background:#8b5cf6;
+color:white;
+}
+
+.gold{
+background:gold;
+color:black;
+}
+
+.diamond{
+background:#06b6d4;
+color:white;
+}
+
+.legend{
+background:#ef4444;
+color:white;
+}
+
+.bank{
+background:#14b8a6;
+color:white;
+}
+
+.reset{
+background:#dc2626;
+color:white;
+}
+
+.achievement{
+
+background:#334155;
+
+padding:10px;
+
+border-radius:10px;
+
+margin-bottom:8px;
+
+}
+
+.notification{
+
+position:fixed;
+
+top:20px;
+right:20px;
+
+background:#22c55e;
+
+padding:15px;
+
+border-radius:12px;
+
+font-weight:bold;
+
+opacity:0;
+
+transform:
+translateY(-20px);
+
+transition:.3s;
+
+z-index:9999;
+
+}
+
+.notification.show{
+
+opacity:1;
+
+transform:
+translateY(0);
+
+}
+
+.bigwin{
+
+animation:
+flash .4s infinite;
+
+}
+
+@keyframes flash{
+
+0%{
+filter:hue-rotate(0deg);
+}
+
+100%{
+filter:hue-rotate(180deg);
+}
+
+}
+
+.ending{
+
+position:fixed;
+
+inset:0;
+
+background:black;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:999999;
+
+text-align:center;
+
+}
+
+.ending h1{
+
+font-size:80px;
+
+color:gold;
+
+margin-bottom:20px;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div
+id="notification"
+class="notification">
+
+알림
+
+</div>
+
+<div class="container">
+
+<header>
+
+<div class="logo">
+
+🎫 Lottery Empire v2
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+
+<div>현금</div>
+
+<div
+class="stat-value"
+id="money">
+
+₩0
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>빚</div>
+
+<div
+class="stat-value"
+id="debt">
+
+₩0
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>레벨</div>
+
+<div
+class="stat-value"
+id="level">
+
+1
+
+</div>
+
+</div>
+
+<div class="stat">
+
+<div>최고당첨</div>
+
+<div
+class="stat-value"
+id="bestWin">
+
+₩0
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<div class="layout">
+
+<div class="ticket">
+
+<div class="ticket-title">
+
+₩1,000,000,000
+
+</div>
+
+<div class="ticket-sub">
+
+행운 숫자를 맞추세요
+
+</div>
+
+<div class="lucky-box">
+
+<div
+style="font-weight:bold;
+margin-bottom:10px;">
+
+행운 숫자
+
+</div>
+
+<div
+class="lucky-number"
+id="luckyNumber">
+
+?
+
+</div>
+
+</div>
+
+<div class="grid-title">
+
+내 숫자
+
+</div>
+
+<div
+class="number-grid"
+id="numberGrid">
+
+</div>
+
+</div>
+
+<div>
+
+<div class="panel">
+
+<h2>🎫 복권 구매</h2>
+
+<button
+class="btn normal"
+onclick="buyTicket('normal')">
+
+일반 복권 (₩100)
+
+</button>
+
+<button
+id="premiumBtn"
+class="btn premium">
+
+고급 복권 (Lv2)
+
+</button>
+
+<button
+id="goldBtn"
+class="btn gold">
+
+황금 복권 (Lv3)
+
+</button>
+
+<button
+id="diamondBtn"
+class="btn diamond">
+
+다이아 복권 (Lv4)
+
+</button>
+
+<button
+id="legendBtn"
+class="btn legend">
+
+전설 복권 (Lv5)
+
+</button>
+
+</div>
+
+<div class="panel">
+
+<h2>🏦 은행</h2>
+
+<button
+class="btn bank"
+onclick="takeLoan()">
+
+₩10,000 대출
+
+</button>
+
+<button
+class="btn bank"
+onclick="repayLoan()">
+
+₩10,000 상환
+
+</button>
+
+<p>
+
+30초마다
+빚 1% 증가
+
+</p>
+
+</div>
+
+<div class="panel">
+
+<h2>⚙️ 게임</h2>
+
+<button
+class="btn reset"
+onclick="resetGame()">
+
+재시작
+
+</button>
+
+</div>
+
+<div class="panel">
+
+<h2>🏆 업적</h2>
+
+<div
+id="achievementList">
+
+<div class="achievement">
+
+아직 없음
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const game={
+
+money:1000,
+debt:0,
+
+level:1,
+
+ticketCount:0,
+
+bestWin:0,
+
+totalWon:0,
+
+currentTicket:null
+
+};
+
+function formatMoney(v){
+
+return "₩"+
+Math.floor(v)
+.toLocaleString();
+
+}
+
+function notify(text){
+
+const n=
+document.getElementById(
+"notification"
+);
+
+n.innerText=text;
+
+n.classList.add("show");
+
+setTimeout(()=>{
+
+n.classList.remove(
+"show"
+);
+
+},2500);
+
+}
+function getNetWorth(){
+
+    return game.money - game.debt;
+
+}
+
+function updateLevel(){
+
+    const worth =
+    getNetWorth();
+
+    if(worth>=10000000)
+    game.level=5;
+
+    else if(worth>=1000000)
+    game.level=4;
+
+    else if(worth>=100000)
+    game.level=3;
+
+    else if(worth>=10000)
+    game.level=2;
+
+    else
+    game.level=1;
+
+}
+
+function updateUI(){
+
+    updateLevel();
+
+    money.innerText=
+    formatMoney(game.money);
+
+    debt.innerText=
+    formatMoney(game.debt);
+
+    level.innerText=
+    "Lv."+game.level;
+
+    bestWin.innerText=
+    formatMoney(game.bestWin);
+
+    premiumBtn.disabled=
+    game.level<2;
+
+    goldBtn.disabled=
+    game.level<3;
+
+    diamondBtn.disabled=
+    game.level<4;
+
+    legendBtn.disabled=
+    game.level<5;
+
+    saveGame();
+
+    checkEnding();
+
+}
+
+function saveGame(){
+
+    localStorage.setItem(
+        "lotteryEmpireV2",
+        JSON.stringify(game)
+    );
+
+}
+
+function loadGame(){
+
+    const save=
+    localStorage.getItem(
+        "lotteryEmpireV2"
+    );
+
+    if(!save)
+    return;
+
+    Object.assign(
+        game,
+        JSON.parse(save)
+    );
+
+}
+
+function resetGame(){
+
+    if(
+        !confirm(
+            "정말 재시작할까요?"
+        )
+    ) return;
+
+    localStorage.removeItem(
+        "lotteryEmpireV2"
+    );
+
+    location.reload();
+
+}
+
+function takeLoan(){
+
+    game.money+=10000;
+
+    game.debt+=10000;
+
+    updateUI();
+
+    notify(
+        "₩10,000 대출"
+    );
+
+}
+
+function repayLoan(){
+
+    if(game.money<10000){
+
+        notify(
+            "현금 부족"
+        );
+
+        return;
+
+    }
+
+    if(game.debt<=0){
+
+        notify(
+            "빚이 없습니다"
+        );
+
+        return;
+
+    }
+
+    game.money-=10000;
+
+    game.debt-=10000;
+
+    if(game.debt<0)
+    game.debt=0;
+
+    updateUI();
+
+}
+
+function randomNumber(){
+
+    return Math.floor(
+        Math.random()*9
+    )+1;
+
+}
+
+function buyTicket(type){
+
+    let cost=100;
+
+    if(type==="premium")
+    cost=1000;
+
+    if(type==="gold")
+    cost=10000;
+
+    if(type==="diamond")
+    cost=100000;
+
+    if(type==="legend")
+    cost=1000000;
+
+    if(game.money<cost){
+
+        notify(
+            "돈 부족"
+        );
+
+        return;
+
+    }
+
+    game.money-=cost;
+
+    game.ticketCount++;
+
+    generateTicket(type);
+
+    updateUI();
+
+}
+
+premiumBtn.onclick=
+()=>buyTicket("premium");
+
+goldBtn.onclick=
+()=>buyTicket("gold");
+
+diamondBtn.onclick=
+()=>buyTicket("diamond");
+
+legendBtn.onclick=
+()=>buyTicket("legend");
+
+function generateTicket(type){
+
+    const lucky=
+    randomNumber();
+
+    const numbers=[];
+    const rewards=[];
+
+    let table=[100];
+
+    switch(type){
+
+        case "normal":
+        table=[
+        100,500,1000,
+        5000,10000,50000
+        ];
+        break;
+
+        case "premium":
+        table=[
+        1000,5000,10000,
+        50000,100000,1000000
+        ];
+        break;
+
+        case "gold":
+        table=[
+        10000,50000,100000,
+        500000,1000000,10000000
+        ];
+        break;
+
+        case "diamond":
+        table=[
+        100000,
+        500000,
+        1000000,
+        5000000,
+        10000000,
+        100000000
+        ];
+        break;
+
+        case "legend":
+        table=[
+        1000000,
+        5000000,
+        10000000,
+        50000000,
+        100000000,
+        500000000
+        ];
+        break;
+
+    }
+
+    for(let i=0;i<6;i++){
+
+        numbers.push(
+            randomNumber()
+        );
+
+        rewards.push(
+
+            table[
+                Math.floor(
+                    Math.random()*
+                    table.length
+                )
+            ]
+
+        );
+
+    }
+
+    if(
+        type==="legend" &&
+        Math.random()<0.00002
+    ){
+
+        rewards[
+            Math.floor(
+                Math.random()*6
+            )
+        ]=1000000000;
+
+    }
+
+    game.currentTicket={
+
+        lucky,
+        numbers,
+        rewards
+
+    };
+
+    renderTicket();
+
+}
+
+function renderTicket(){
+
+    const t=
+    game.currentTicket;
+
+    luckyNumber.innerHTML=
+    t.lucky;
+
+    numberGrid.innerHTML="";
+
+    for(let i=0;i<6;i++){
+
+        const cell=
+        document.createElement(
+            "div"
+        );
+
+        cell.className=
+        "number-cell";
+
+        cell.innerHTML=`
+
+        <div class="cell-content">
+
+        <div class="cell-number">
+        ${t.numbers[i]}
+        </div>
+
+        <div class="cell-reward">
+        ${formatMoney(
+            t.rewards[i]
+        )}
+        </div>
+
+        </div>
+
+        `;
+
+        numberGrid.appendChild(
+            cell
+        );
+
+    }
+
+    setupScratch();
+
+}
+
+function createScratchLayer(
+target,
+callback
+){
+
+    const canvas=
+    document.createElement(
+        "canvas"
+    );
+
+    canvas.width=
+    target.offsetWidth;
+
+    canvas.height=
+    target.offsetHeight;
+
+    target.appendChild(canvas);
+
+    const ctx=
+    canvas.getContext("2d");
+
+    ctx.fillStyle="#bdbdbd";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle="white";
+
+    ctx.font="bold 20px Arial";
+
+    ctx.textAlign="center";
+
+    ctx.fillText(
+        "긁기",
+        canvas.width/2,
+        canvas.height/2
+    );
+
+    let scratching=false;
+    let finished=false;
+
+    function scratch(x,y){
+
+        ctx.globalCompositeOperation=
+        "destination-out";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x,
+            y,
+            20,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        if(finished)
+        return;
+
+        const img=
+        ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        let clear=0;
+
+        for(
+            let i=3;
+            i<img.data.length;
+            i+=4
+        ){
+
+            if(
+                img.data[i]===0
+            ){
+
+                clear++;
+
+            }
+
+        }
+
+        const percent=
+        clear/
+        (
+            canvas.width*
+            canvas.height
+        );
+
+        if(percent>=0.5){
+
+            finished=true;
+
+            canvas.style.transition=
+            "0.3s";
+
+            canvas.style.opacity=
+            "0";
+
+            setTimeout(()=>{
+
+                canvas.remove();
+
+                if(callback)
+                callback();
+
+            },300);
+
+        }
+
+    }
+
+    canvas.addEventListener(
+        "mousedown",
+        ()=>scratching=true
+    );
+
+    canvas.addEventListener(
+        "mouseup",
+        ()=>scratching=false
+    );
+
+    canvas.addEventListener(
+        "mouseleave",
+        ()=>scratching=false
+    );
+
+    canvas.addEventListener(
+        "mousemove",
+        e=>{
+
+            if(!scratching)
+            return;
+
+            const r=
+            canvas.getBoundingClientRect();
+
+            scratch(
+                e.clientX-r.left,
+                e.clientY-r.top
+            );
+
+        }
+    );
+
+}
+
+function setupScratch(){
+
+    createScratchLayer(
+        luckyNumber
+    );
+
+    document
+    .querySelectorAll(
+        ".number-cell"
+    )
+    .forEach(cell=>{
+
+        createScratchLayer(
+            cell,
+            null
+        );
+
+    });
+
+}
+
+function evaluateTicket(){
+
+    const t=
+    game.currentTicket;
+
+    let reward=0;
+
+    for(let i=0;i<6;i++){
+
+        if(
+            t.numbers[i]
+            ===
+            t.lucky
+        ){
+
+            reward+=
+            t.rewards[i];
+
+        }
+
+    }
+
+    game.money+=reward;
+
+    if(
+        reward>
+        game.bestWin
+    ){
+
+        game.bestWin=
+        reward;
+
+    }
+
+    updateUI();
+
+}
+
+function checkEnding(){
+
+    if(
+        getNetWorth()
+        >=
+        2000000000
+    ){
+
+        document.body.innerHTML=`
+
+        <div class="ending">
+
+        <h1>
+        👑 THE END
+        </h1>
+
+        <h2>
+        20억 달성!
+        </h2>
+
+        <br>
+
+        <button
+        onclick="resetGame()">
+
+        다시 시작
+
+        </button>
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+setInterval(()=>{
+
+    if(game.debt<=0)
+    return;
+
+    const interest=
+
+    Math.floor(
+        game.debt*0.01
+    );
+
+    game.debt+=interest;
+
+    updateUI();
+
+    notify(
+        "빚 이자 +" +
+        formatMoney(
+            interest
+        )
+    );
+
+},30000);
+
+loadGame();
+
+updateUI();
+
+generateTicket(
+    "normal"
+);
+
+</script>
+</body>
+</html>
